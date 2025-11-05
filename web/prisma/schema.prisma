@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id             String    @id @default(cuid())
+  chatId         String
+  sourceMessageId Int?
+  title          String
+  description    String?
+  dueAt          DateTime?
+  remindAt       DateTime?
+  earlyRemindAt  DateTime?
+  priority       TaskPriority @default(NORMAL)
+  status         TaskStatus   @default(OPEN)
+  tags           String[]     @default([])
+  timezone       String       @default("Asia/Kolkata")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([chatId, status, dueAt])
+  @@index([chatId, remindAt])
+  @@index([chatId, earlyRemindAt])
+}
+
+enum TaskPriority {
+  HIGH
+  NORMAL
+  LOW
+}
+
+enum TaskStatus {
+  OPEN
+  DONE
+}
